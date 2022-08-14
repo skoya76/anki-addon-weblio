@@ -4,23 +4,7 @@ from typing import Callable
 
 import aqt
 import aqt.forms
-import aqt.operations
-from anki.collection import OpChangesWithId
-from anki.decks import DeckId
-from aqt import gui_hooks
-from aqt.operations.deck import add_deck_dialog
 from aqt.qt import *
-from aqt.utils import (
-    HelpPage,
-    HelpPageArgument,
-    disable_help_button,
-    openHelp,
-    restoreGeom,
-    saveGeom,
-    shortcut,
-    showInfo,
-    tr,
-)
 
 import urllib.request
 import requests
