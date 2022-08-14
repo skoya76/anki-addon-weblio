@@ -11,7 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-class StudyDeck(QDialog):
+class Download_Ui(QDialog):
     def __init__(
         self,
         mw: aqt.AnkiQt,
