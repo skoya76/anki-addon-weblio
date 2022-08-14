@@ -1,8 +1,4 @@
-# Copyright: Ankitects Pty Ltd and contributors
-# License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
-
 from __future__ import annotations
-from calendar import formatstring
 
 from typing import Callable
 
@@ -42,8 +38,6 @@ class StudyDeck(QDialog):
         cancel: bool = True,
         parent: QWidget | None = None,
         dyn: bool = False,
-        #buttons: list[str | QPushButton] | None = None,
-        #geomKey: str = "default",
         callback: Callable[[StudyDeck], None] | None = None,
     ) -> None:
         super().__init__(parent)
@@ -53,25 +47,6 @@ class StudyDeck(QDialog):
         self.form = aqt.forms.studydeck.Ui_Dialog()
         self.form.setupUi(self)
         self.form.filter.installEventFilter(self)
-        gui_hooks.state_did_reset.append(self.onReset)
-        #self.geomKey = f"studyDeck-{geomKey}"
-        #restoreGeom(self, self.geomKey)
-        #disable_help_button(self)
-        #if not cancel:
-        #    self.form.buttonBox.removeButton(
-        #        self.form.buttonBox.button(QDialogButtonBox.StandardButton.Cancel)
-        #    )
-        #if buttons is not None:
-        #    for button_or_label in buttons:
-        #        self.form.buttonBox.addButton(
-        #            button_or_label, QDialogButtonBox.ButtonRole.ActionRole
-        #        )
-        #else:
-        #    b = QPushButton(tr.actions_add())
-        #    b.setShortcut(QKeySequence("Ctrl+N"))
-        #    b.setToolTip(shortcut(tr.decks_add_new_deck_ctrlandn()))
-        #    self.form.buttonBox.addButton(b, QDialogButtonBox.ButtonRole.ActionRole)
-        #    qconnect(b.clicked, self.onAddDeck)
         if title:
             self.setWindowTitle(title)
         if not names:
@@ -87,47 +62,15 @@ class StudyDeck(QDialog):
             self.nameFunc = names
             self.origNames = names()
         self.name: str | None = None
-        #self.form.buttonBox.addButton(
-        #    accept or tr.decks_study(), QDialogButtonBox.ButtonRole.AcceptRole
-        #)
-        #self.setModal(True)
-        #qconnect(self.form.buttonBox.helpRequested, lambda: openHelp(help))
         qconnect(self.form.filter.textEdited, self.redraw)
         qconnect(self.form.list.itemDoubleClicked, self.accept)
-        #qconnect(self.finished, self.on_finished)
         self.show()
-        # redraw after show so position at center correct
         self.redraw("", current)
         self.callback = callback
         if callback:
             self.show()
         else:
             self.exec()
-
-    def eventFilter(self, obj: QObject, evt: QEvent) -> bool:
-        if isinstance(evt, QKeyEvent) and evt.type() == QEvent.Type.KeyPress:
-            new_row = current_row = self.form.list.currentRow()
-            rows_count = self.form.list.count()
-            key = evt.key()
-
-            if key == Qt.Key.Key_Up:
-                new_row = current_row - 1
-            elif key == Qt.Key.Key_Down:
-                new_row = current_row + 1
-            elif (
-                evt.modifiers() & Qt.KeyboardModifier.ControlModifier
-                and Qt.Key.Key_1 <= key <= Qt.Key.Key_9
-            ):
-                row_index = key - Qt.Key.Key_1
-                if row_index < rows_count:
-                    new_row = row_index
-
-            if rows_count:
-                new_row %= rows_count  # don't let row index overflow/underflow
-            if new_row != current_row:
-                self.form.list.setCurrentRow(new_row)
-                return True
-        return False
 
     def redraw(self, filt: str, focus: str | None = None) -> None:
         self.filt = filt
@@ -153,12 +96,6 @@ class StudyDeck(QDialog):
                 return False
         return True
 
-    def onReset(self) -> None:
-        # model updated?
-        if self.nameFunc:
-            self.origNames = self.nameFunc()
-        self.redraw(self.filt, self.focus)
-
     def accept(self) -> None:
         row = self.form.list.currentRow()
         if row < 0:
@@ -170,7 +107,6 @@ class StudyDeck(QDialog):
     def accept_with_callback(self) -> None:
         if self.callback:
             self.callback(self)
-        #super().accept()
         self.downloader()
     
     def formatting(self, st):
@@ -212,7 +148,3 @@ class StudyDeck(QDialog):
                     word = self.formatting(card.q())
                     note[name] = self.req_weblio(word)
             note.flush()
-
-    #def on_finished(self) -> None:
-    #    saveGeom(self, self.geomKey)
-    #    gui_hooks.state_did_reset.remove(self.onReset)
