@@ -5,6 +5,7 @@ from typing import Callable
 import aqt
 import aqt.forms
 from aqt.qt import *
+from aqt.utils import tr
 
 import urllib.request
 import requests
