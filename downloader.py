@@ -1,4 +1,5 @@
 from __future__ import annotations
+from shutil import register_unpack_format
 
 from typing import Callable
 
@@ -111,7 +112,10 @@ class Download_Ui(QDialog):
     def req_weblio(self, value):
         word = value.replace(' ','+')
         url = "https://ejje.weblio.jp/content/{}".format(word)
-        page = urllib.request.urlopen(url)
+        try:
+            page = urllib.request.urlopen(url)
+        except:
+            return 'error'
         soup = BeautifulSoup(page, 'html.parser')
         mean_elm = soup.find('span', class_='content-explanation ej')
         if not mean_elm:
