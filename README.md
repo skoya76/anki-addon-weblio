@@ -1,4 +1,4 @@
-# anki-addon-weblio
+# JP-Meanings-Pronunciations-Downloader
 https://ankiweb.net/shared/info/1850313599
 
 
