@@ -106,6 +106,7 @@ class Download_Ui(QDialog):
         result = re.findall(pattern, elm, re.S)
         name = result[0]
         r = requests.get(elm)
+        # If the media file is not saved in the directory you desire, setting the directory path to the first argument of file() may solve the problem.
         open(name, 'wb').write(r.content)
         return name
 
